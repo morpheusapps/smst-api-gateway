@@ -14,6 +14,7 @@ export const runServer = async (port: string | number): Promise<void> => {
     ApplicationModule,
     new ExpressAdapter(server)
   );
+  app.setGlobalPrefix('api');
   Swagger(app);
   ApiLogger(app);
   const getUrlByEnv = GetUrlByEnv(urls);

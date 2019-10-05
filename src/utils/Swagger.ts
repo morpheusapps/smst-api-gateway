@@ -6,6 +6,7 @@ export const Swagger = (app: INestApplication): void => {
     .setTitle('COMMON-ENTITIES')
     .setDescription('Common-Entities API description')
     .setVersion('1.0.0')
+    .setBasePath('/api')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
