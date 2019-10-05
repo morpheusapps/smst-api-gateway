@@ -17,9 +17,9 @@ export class AuthController {
     // @ts-ignore
     const { jwt } = req.user;
     if (jwt) {
-      res.redirect('http://localhost:3000/login/succes/' + jwt);
+      res.redirect(`http://localhost:3000/home?jwt=${jwt}`);
     } else {
-      res.redirect('http://localhost:3000/login/failure');
+      res.redirect('http://localhost:3000/unauthorized');
     }
   }
 }
