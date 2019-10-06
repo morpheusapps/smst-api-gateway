@@ -17,10 +17,9 @@ export class AuthService {
         provider
       };
 
-      //  const jwt: string = this.jwtService.sign(payload);
-      return 'meow';
+      const jwt: string = this.jwtService.sign(payload);
+      return jwt;
     } catch (error) {
-      // console.log('yay');
       throw new InternalServerErrorException(
         'validateOAuthLogin',
         error.message

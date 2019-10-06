@@ -5,17 +5,17 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  // private readonly authService: AuthService;
+  private readonly authService: AuthService;
 
-  public constructor(/*authService: AuthService*/) {
+  public constructor(authService: AuthService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: '/api/auth/google/callback',
       passReqToCallback: true,
-      scope: ['profile']
+      scope: ['profile', 'email']
     });
-    // this.authService = authService;
+    this.authService = authService;
   }
 
   public validate(
@@ -26,12 +26,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback
   ): void {
     try {
-      //console.log(profile);
-      // console.log(this.authService)
-      // const jwt = this.authService.validateGoogleOAuthLogin('wtf');
-      const jwt = 'meow';
-      const email = 'mee';
-      // const email = profile.emails[0].value;
+      const jwt = this.authService.validateGoogleOAuthLogin(profile.id);
+      const email = profile.emails[0].value;
 
       const user = {
         jwt,
@@ -39,9 +35,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       };
 
       done(null, user);
-    } catch (err) {
-      // console.log(err);
-      done(err, false);
+    } catch (error) {
+      done(error, false);
     }
   }
 }
