@@ -1,35 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-google-oauth20';
+import { Strategy, Profile, VerifyCallback } from 'passport-google-oauth20';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  public constructor() {
+  // private readonly authService: AuthService;
+
+  public constructor(/*authService: AuthService*/) {
     super({
-      clientID:
-        '1077995647901-dgv1orqvenl28vv6mdhesvhbvej05v1f.apps.googleusercontent.com',
-      clientSecret: 'Z2WD6tfaNjaJm6BqHiRXxIl5',
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: '/api/auth/google/callback',
       passReqToCallback: true,
       scope: ['profile']
     });
+    // this.authService = authService;
   }
 
   public validate(
     request: unknown,
     accessToken: string,
     refreshToken: string,
-    profile: unknown,
-    done: Function
+    profile: Profile,
+    done: VerifyCallback
   ): void {
     try {
-      const jwt = 'placeholderJWT';
+      //console.log(profile);
+      // console.log(this.authService)
+      // const jwt = this.authService.validateGoogleOAuthLogin('wtf');
+      const jwt = 'meow';
+      const email = 'mee';
+      // const email = profile.emails[0].value;
+
       const user = {
-        jwt
+        jwt,
+        email
       };
 
       done(null, user);
     } catch (err) {
+      // console.log(err);
       done(err, false);
     }
   }
