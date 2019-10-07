@@ -11,20 +11,21 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   public googleLoginCallback(
-    @Req() req: Request & { user: { jwt: string; email: string } },
+    @Req() req: Request & { user: { jwt?: string; email?: string } },
     @Res() res: Response
   ): void {
-    const { jwt, email } = req.user;
-    if (jwt) {
-      res.redirect(`http://localhost:3000/home?jwt=${jwt}&email=${email}`);
-    } else {
-      res.redirect('http://localhost:3000/unauthorized');
-    }
+    const { jwt = '', email = '' } = req.user;
+    res.redirect(`http://localhost:3000/home?jwt=${jwt}&email=${email}`);
   }
 
-  @Get('protected')
+  @Get('confirm')
   @UseGuards(AuthGuard('jwt'))
-  public protectedResource(): string {
-    return 'JWT is working!';
+  public confirmLogin(
+    @Req() req: Request & { student?: string },
+    @Res() res: Response
+  ): void {
+    const { email } = req.query;
+    req.session.student = email;
+    res.sendStatus(200);
   }
 }
