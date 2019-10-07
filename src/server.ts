@@ -17,19 +17,25 @@ export const runServer = async (port: string | number): Promise<void> => {
   );
   app.use(
     session({
-      secret: 'meow',
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: true
     })
   );
-  app.use((req: Request, res: Response, next: NextFunction): void => {
-    const { cookie, ...sessionFields } = req.session;
-    Object.keys(sessionFields).forEach((field: string): void => {
-      // @ts-ignore
-      req[field] = req.session[field];
-    });
-    next();
-  });
+  app.use(
+    (
+      req: Request & { [key: string]: unknown },
+      res: Response,
+      next: NextFunction
+    ): void => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { cookie, ...sessionFields } = req.session;
+      Object.keys(sessionFields).forEach((field: string): void => {
+        req[field] = req.session[field];
+      });
+      next();
+    }
+  );
   app.enableCors({ origin: 'http://localhost:3000' });
   app.setGlobalPrefix('api');
   Swagger(app);
