@@ -10,10 +10,13 @@ export class AuthService {
     this.jwtService = jwtService;
   }
 
-  private validateOAuthLogin(thirdPartyId: string, provider: Provider): string {
+  private validateOAuthLogin(
+    thirdPartyCredentials: { thirdPartyId: string; email: string },
+    provider: Provider
+  ): string {
     try {
       const payload = {
-        thirdPartyId,
+        thirdPartyCredentials,
         provider
       };
 
@@ -27,7 +30,14 @@ export class AuthService {
     }
   }
 
-  public validateGoogleOAuthLogin(googleId: string): string {
-    return this.validateOAuthLogin(googleId, Provider.GOOGLE);
+  public validateGoogleOAuthLogin({
+    googleId,
+    gmail
+  }: {
+    googleId: string;
+    gmail: string;
+  }): string {
+    const googleCredentials = { thirdPartyId: googleId, email: gmail };
+    return this.validateOAuthLogin(googleCredentials, Provider.GOOGLE);
   }
 }

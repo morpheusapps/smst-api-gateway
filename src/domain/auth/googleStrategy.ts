@@ -26,12 +26,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback
   ): void {
     try {
-      const jwt = this.authService.validateGoogleOAuthLogin(profile.id);
-      const email = profile.emails[0].value;
+      const gmail = profile.emails[0].value;
+      const token = this.authService.validateGoogleOAuthLogin({
+        googleId: profile.id,
+        gmail
+      });
 
       const user = {
-        jwt,
-        email
+        token
       };
 
       done(null, user);

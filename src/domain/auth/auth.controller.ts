@@ -1,4 +1,11 @@
-import { Controller, Get, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Res,
+  Req,
+  UnauthorizedException
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
@@ -11,21 +18,35 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   public googleLoginCallback(
-    @Req() req: Request & { user: { jwt?: string; email?: string } },
+    @Req() req: Request & { user: { token?: string } },
     @Res() res: Response
   ): void {
-    const { jwt = '', email = '' } = req.user;
-    res.redirect(`http://localhost:3000/home?jwt=${jwt}&email=${email}`);
+    res.redirect(
+      `${process.env.CLIENT_AUTH_REDIRECT_ADDRESS}?token=${req.user.token ||
+        ''}`
+    );
   }
 
   @Get('confirm')
   @UseGuards(AuthGuard('jwt'))
   public confirmLogin(
-    @Req() req: Request & { student?: string },
-    @Res() res: Response
+    @Req()
+    req: Request & {
+      user: {
+        thirdPartyCredentials: { thirdPartyId: string; email: string };
+        provider: string;
+      };
+    }
   ): void {
-    const { email } = req.query;
-    req.session.student = email;
-    res.sendStatus(200);
+    const { thirdPartyCredentials, provider } = req.user;
+    switch (provider) {
+      case 'google': {
+        req.session.userId = thirdPartyCredentials.thirdPartyId;
+        req.session.student = thirdPartyCredentials.email;
+        break;
+      }
+      default:
+        throw new UnauthorizedException();
+    }
   }
 }
