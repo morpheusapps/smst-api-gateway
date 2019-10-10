@@ -36,7 +36,6 @@ export const runServer = async (port: string | number): Promise<void> => {
       next();
     }
   );
-  app.enableCors({ origin: 'http://localhost:3000' });
   app.setGlobalPrefix('api');
   Swagger(app);
   ApiLogger(app);
