@@ -62,7 +62,7 @@ export class AuthController {
   public getSession(
     @Req()
     req: Request
-  ): { profile: string } {
+  ): { profile?: string } {
     return { profile: req.session.studentEmail };
   }
 
