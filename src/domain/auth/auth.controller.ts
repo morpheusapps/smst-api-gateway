@@ -45,13 +45,13 @@ export class AuthController {
         provider: string;
       };
     }
-  ): void {
+  ): { profile: string } {
     const { thirdPartyCredentials, provider } = req.user;
     switch (provider) {
       case 'google': {
         req.session.userId = thirdPartyCredentials.thirdPartyId;
         req.session.studentEmail = thirdPartyCredentials.email;
-        break;
+        return { profile: req.session.studentEmail };
       }
       default:
         throw new UnauthorizedException();
